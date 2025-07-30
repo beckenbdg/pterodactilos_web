@@ -1,4 +1,4 @@
-<?php
+<?php 
 date_default_timezone_set('America/Mexico_City');
 $directorio = __DIR__ . "/archivos_fms/";
 
@@ -8,7 +8,11 @@ if (!is_dir($directorio)) {
 }
 
 $archivos = array_diff(scandir($directorio), array('.', '..'));
-sort($archivos); // Orden alfabético
+
+// Ordenar por fecha de creación (más reciente al más antiguo)
+usort($archivos, function($a, $b) use ($directorio) {
+    return filectime($directorio . $b) - filectime($directorio . $a);
+});
 
 if (empty($archivos)) {
   echo "<p>No hay archivos disponibles.</p>";
@@ -20,7 +24,6 @@ echo "<ul style='list-style: none; padding: 0;'>";
 foreach ($archivos as $archivo) {
     $ruta = $directorio . $archivo;
 
-    // Fecha de creación (en Windows funciona, en Linux devuelve última modificación si no hay metadata)
     $timestamp = filectime($ruta);
     $fecha = date("Y-m-d H:i:s", $timestamp);
 
